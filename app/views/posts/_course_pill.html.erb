@@ -1,0 +1,11 @@
+<% return unless post.respond_to?(:course) && post.course.present? && post.course.respond_to?(:title) %>
+
+<% title = post.course.title.to_s %>
+
+<span class="rounded-full px-3 py-1 text-xs font-medium"
+      style="
+        background-color: <%= color_from_string(title, saturation: 70, lightness: 85) %>;
+        color: <%= color_from_string(title, saturation: 70, lightness: 35) %>;
+      ">
+  <%= title %>
+</span>

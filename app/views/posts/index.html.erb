@@ -1,0 +1,55 @@
+<div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-3xl font-semibold text-gray-900">Posts</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        Browse and create study posts by category
+      </p>
+    </div>
+
+    <%= link_to "New post",
+        new_post_path,
+        class: "inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5
+                text-sm font-semibold text-white hover:bg-blue-700 transition" %>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <%= form_with url: posts_path, method: :get, class: "flex items-center gap-3" do |f| %>
+      <%= f.select :course_id,
+        options_for_select(
+          [["All courses", ""]] +
+          @courses.map { |c| [c.title, c.id] },
+          params[:course_id]
+        ),
+        {},
+        class: "rounded-lg border-gray-300 px-4 py-2 text-sm
+                focus:border-blue-500 focus:ring-2 focus:ring-blue-500",
+        onchange: "this.form.submit()" %>
+    <% end %>
+  </div>
+
+  <!-- Feed -->
+  <div class="space-y-5">
+    <%= render @posts %>
+
+    <% if @posts.empty? %>
+      <div class="text-center text-gray-500 py-12">
+        <p class="mb-2">
+          No posts in
+          <span class="font-medium text-gray-700">
+            <%= @courses.find_by(id: params[:course_id])&.title || "this category" %>
+          </span>
+          yet.
+        </p>
+
+        <%= link_to "Be the first to create one →",
+            new_post_path(course_id: params[:course_id]),
+            class: "text-blue-600 font-medium hover:underline" %>
+      </div>
+    <% end %>
+
+  </div>
+
+</div>

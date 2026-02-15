@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-50">
+  <head>
+    <title><%= content_for(:title) || "Course Management" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+    <%= yield :head %>
+  </head>
+
+  <body class="h-full font-sans antialiased text-gray-900">
+
+    <% if user_signed_in? %>
+      <%= turbo_stream_from "notifications_#{current_user.id}" %>
+    <% end %>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-10 shadow-sm">
+      <div class="h-full px-6 flex items-center justify-between">
+        <%= link_to posts_path, class: "flex items-center gap-2 hover:opacity-80 transition" do %>
+          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+          <span class="font-bold text-xl text-gray-900">Course Management</span>
+        <% end %>
+
+        <nav class="flex items-center gap-6">
+          <%= link_to "New group chat", new_conversation_path, data: { turbo_frame: "chat_modal" }, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition" %>
+          <%= link_to "Browse Posts", posts_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition" %>
+
+          <% if user_signed_in? %>
+            <!-- Notifications -->
+            <div class="relative" data-controller="notifications">
+              <button type="button"
+                class="relative p-2 rounded-lg hover:bg-gray-100 transition"
+                data-action="click->notifications#toggle"
+                aria-label="Notifications">
+                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0m6 0H9" />
+                </svg>
+
+                <span id="notifications_badge">
+                  <%= render "notifications/badge", user: current_user %>
+                </span>
+              </button>
+
+              <div id="notifications_panel"
+                   class="hidden absolute right-0 mt-2 w-96 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+                <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                  <div class="text-sm font-semibold text-gray-900">Notifications</div>
+                  <div class="text-xs text-gray-500">
+                    <%= current_user.notifications.unread.count %> unread
+                  </div>
+                </div>
+
+                <div id="notifications_list" class="max-h-96 overflow-y-auto">
+                  <% items = current_user.notifications.recent.limit(20) %>
+                  <% if items.any? %>
+                    <% items.each do |n| %>
+                      <%= render "notifications/item", notification: n %>
+                    <% end %>
+                  <% else %>
+                    <div class="p-4 text-sm text-gray-500">No notifications yet.</div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+            <%= render "shared/avatar", user: current_user %>
+          <% else %>
+            <%= link_to "Log in", new_user_session_path, class: "px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition" %>
+          <% end %>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="pt-16 h-full">
+      <% if devise_controller? %>
+        <!-- Devise Pages (Login, Signup, etc) -->
+        <main class="h-full overflow-y-auto bg-gray-50">
+          <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <%= yield %>
+          </div>
+        </main>
+      <% else %>
+        <!-- Regular Pages with Sidebar -->
+        <div class="flex h-full">
+
+          <!-- Left Sidebar - Contacts -->
+          <aside class="w-80 shrink-0 border-r border-gray-200 bg-white flex flex-col shadow-sm">
+            <% if user_signed_in? %>
+              <% @sidebar_users = current_user.contacts.includes(:contact_user).map(&:contact_user).compact %>
+            <% else %>
+              <% @sidebar_users = [] %>
+            <% end %>
+
+            <!-- Sidebar Header -->
+            <div class="p-5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                Contacts
+              </h2>
+              <p class="text-lg font-bold text-gray-900">
+                <%= user_signed_in? ? pluralize(@sidebar_users.size, "Connection") : "Guest Mode" %>
+              </p>
+            </div>
+
+            <!-- Contacts List -->
+            <div class="flex-1 overflow-y-auto">
+              <% if user_signed_in? && @sidebar_users.any? %>
+                <div class="divide-y divide-gray-100">
+                  <% @sidebar_users.each do |u| %>
+                    <%= link_to user_path(u), class: "flex items-center gap-4 px-5 py-4 hover:bg-blue-50 transition-colors group" do %>
+                      <div class="shrink-0">
+                        <%= render "shared/avatar", user: u, link: false %>
+                      </div>
+                      <div class="min-w-0 flex-1">
+                        <div class="text-sm font-semibold text-gray-900 truncate mb-1">
+                          <%= u.username.presence || "User ##{u.id}" %>
+                        </div>
+                        <div class="text-xs text-gray-500 truncate">
+                          <%= u.email %>
+                        </div>
+                      </div>
+                      <svg class="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    <% end %>
+                  <% end %>
+                </div>
+              <% elsif user_signed_in? %>
+                <div class="flex flex-col items-center justify-center p-12 text-center">
+                  <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <p class="text-sm font-medium text-gray-500 mb-2">No contacts yet</p>
+                  <p class="text-xs text-gray-400">Connect with others to see them here</p>
+                </div>
+              <% else %>
+                <div class="flex flex-col items-center justify-center p-12 text-center">
+                  <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <p class="text-sm font-medium text-gray-700 mb-3">Sign in to view contacts</p>
+                  <%= link_to "Log in", new_user_session_path, class: "inline-block px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition" %>
+                </div>
+              <% end %>
+            </div>
+          </aside>
+
+          <!-- Main Content -->
+          <main class="flex-1 overflow-y-auto bg-gray-50">
+            <div class="max-w-5xl mx-auto p-8">
+              <%= yield %>
+            </div>
+          </main>
+
+          <!-- Right Sidebar - Active Chats -->
+          <aside class="w-80 shrink-0 border-l border-gray-200 bg-white flex flex-col shadow-sm">
+            <!-- Sidebar Header -->
+            <div class="p-5 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
+              <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
+                Active Chats
+              </h2>
+              <p class="text-lg font-bold text-gray-900">
+                <%= user_signed_in? ? pluralize(@sidebar_conversations.to_a.size, "Chat") : "Guest Mode" %>
+              </p>
+            </div>
+
+            <!-- Chats List -->
+            <div class="flex-1 overflow-y-auto">
+              <% if user_signed_in? && @sidebar_conversations.present? %>
+                <div class="divide-y divide-gray-100">
+                  <% @sidebar_conversations.each do |c| %>
+                    <% others = c.participants.reject { |p| p.id == current_user.id } %>
+                    <% title  = c.title.presence || others.map { |p| p.username.presence || "User ##{p.id}" }.join(", ") %>
+                    <% last   = c.messages.max_by(&:created_at) %>
+
+                    <%= link_to conversation_path(c),
+                          data: { turbo_frame: "chat_modal" },
+                          class: "flex items-start gap-4 px-5 py-4 hover:bg-purple-50 transition-colors group" do %>
+
+                      <div class="shrink-0">
+                        <% if others.size == 1 %>
+                          <%= render "shared/avatar", user: others.first, link: false %>
+                        <% else %>
+                          <div class="inline-flex items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500 text-white font-semibold select-none shrink-0 ring-2 ring-transparent group-hover:ring-purple-500 transition-all duration-200"
+                               style="width: 2.5rem; height: 2.5rem; font-size: 0.875rem;">
+                            <%= others.size %>
+                          </div>
+                        <% end %>
+                      </div>
+
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                          <div class="text-sm font-semibold text-gray-900 truncate"><%= title %></div>
+                          <% if last %>
+                            <div class="text-[11px] text-gray-400 shrink-0"><%= last.created_at.strftime("%H:%M") %></div>
+                          <% end %>
+                        </div>
+
+                        <div class="text-xs text-gray-500 truncate">
+                          <% if last %>
+                            <span class="font-medium"><%= last.user_id == current_user.id ? "You" : last.user.username %>:</span>
+                            <%= last.body.to_s %>
+                          <% else %>
+                            <span class="italic">No messages yet</span>
+                          <% end %>
+                        </div>
+                      </div>
+
+                      <svg class="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition opacity-0 group-hover:opacity-100 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    <% end %>
+                  <% end %>
+                </div>
+              <% elsif user_signed_in? %>
+                <div class="flex flex-col items-center justify-center p-12 text-center">
+                  <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  <p class="text-sm font-medium text-gray-500 mb-2">No chats yet</p>
+                  <p class="text-xs text-gray-400">Start a conversation to see it here</p>
+                </div>
+              <% else %>
+                <div class="flex flex-col items-center justify-center p-12 text-center">
+                  <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  <p class="text-sm font-medium text-gray-700 mb-3">Sign in to view chats</p>
+                  <%= link_to "Log in", new_user_session_path, class: "inline-block px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition" %>
+                </div>
+              <% end %>
+            </div>
+          </aside>
+
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Turbo Frame for Modal -->
+    <turbo-frame id="chat_modal"></turbo-frame>
+  </body>
+</html>

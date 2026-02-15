@@ -1,0 +1,13 @@
+<%= link_to read_notification_path(notification),
+  data: { turbo_method: :patch },
+  class: "block px-4 py-3 border-b border-gray-100 hover:bg-gray-50" do %>
+
+  <div class="text-sm text-gray-900">
+    <%= notification.text %>
+  </div>
+
+  <div class="text-xs text-gray-500 mt-1">
+    <%= time_ago_in_words(notification.created_at) %> ago
+    <% if notification.read_at.nil? %> • <span class="text-blue-600">new</span><% end %>
+  </div>
+<% end %>

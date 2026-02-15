@@ -1,0 +1,41 @@
+<div id="<%= dom_id post %>"
+     class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
+
+  <!-- Header -->
+  <div class="flex items-start justify-between">
+    <div class="flex items-center gap-3">
+      <!-- Avatar -->
+      <%= render "shared/avatar", user: post.user %>
+
+      <!-- User + time -->
+      <div>
+        <p class="text-sm font-semibold text-gray-900">
+          <%= post.user.username %>
+        </p>
+        <p class="text-xs text-gray-500">
+          <%= time_ago_in_words(post.created_at) %> ago
+        </p>
+      </div>
+    </div>
+
+    <%= render "posts/course_pill", post: post %>
+  </div>
+
+  <!-- Content -->
+  <div class="space-y-2">
+    <h3 class="text-lg font-semibold text-gray-900">
+      <%= link_to post.title, post_path(post), class: "hover:underline" %>
+    </h3>
+
+    <p class="text-sm text-gray-600 leading-relaxed">
+      <%= post.body %>
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div class="flex items-center justify-between pt-2">
+    <%= link_to "View post",
+        post,
+        class: "text-sm font-medium text-gray-500 hover:text-gray-900 transition" %>
+  </div>
+</div>
