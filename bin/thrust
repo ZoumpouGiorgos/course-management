@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby.exe
 require "rubygems"
 require "bundler/setup"
 

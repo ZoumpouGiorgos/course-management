@@ -3,7 +3,6 @@ class PostsController < ApplicationController
   before_action :set_post, only: %i[ show edit update destroy ]
   before_action :authorize_owner!, only: %i[ edit update destroy ]
 
-  # GET /posts
   def index
     @courses = Course.order(:title)
 
@@ -14,22 +13,18 @@ class PostsController < ApplicationController
     end
   end
 
-  # GET /posts/1
   def show
   end
 
-  # GET /posts/new
   def new
     @post = Post.new
     @courses = Course.all
   end
 
-  # GET /posts/1/edit
   def edit
     @courses = Course.all
   end
 
-  # POST /posts
   def create
     @post = current_user.posts.new(post_params)
 
@@ -44,7 +39,6 @@ class PostsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /posts/1
   def update
     respond_to do |format|
       if @post.update(post_params)
@@ -57,7 +51,6 @@ class PostsController < ApplicationController
     end
   end
 
-  # DELETE /posts/1
   def destroy
     @post.destroy
 

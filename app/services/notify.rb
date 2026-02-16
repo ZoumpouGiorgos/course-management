@@ -8,7 +8,6 @@ class Notify
       metadata: (metadata.merge("text" => text)).to_json
     )
 
-    # Add new item to dropdown list
     Turbo::StreamsChannel.broadcast_prepend_to(
       "notifications_#{recipient.id}",
       target: "notifications_list",
@@ -16,7 +15,6 @@ class Notify
       locals: { notification: n }
     )
 
-    # Update badge (unread count bubble)
     Turbo::StreamsChannel.broadcast_replace_to(
       "notifications_#{recipient.id}",
       target: "notifications_badge",

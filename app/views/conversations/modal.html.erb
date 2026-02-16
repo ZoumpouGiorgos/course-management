@@ -1,17 +1,17 @@
 <turbo-frame id="chat_modal">
-  <!-- Backdrop -->
+  
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="this.closest('turbo-frame').src = '<%= close_chat_modal_path %>'"></div>
 
-    <!-- Panel -->
+    
     <div class="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col" style="height: 85vh; max-height: 700px;">
 
-      <!-- Header -->
+      
       <div class="flex items-center gap-4 px-6 py-4 border-b border-gray-200 bg-white rounded-t-2xl shrink-0">
         <% others = @conversation.participants.where.not(id: current_user.id) %>
         <% title = @conversation.title.presence || others.map(&:username).join(", ") %>
 
-        <!-- Group Avatar or Single Avatar -->
+        
         <% if others.size == 1 %>
           <%= render "shared/avatar", user: others.first, link: false %>
         <% else %>
@@ -39,7 +39,7 @@
 
       <%= turbo_stream_from "conversation_#{@conversation.id}" %>
 
-      <!-- Messages Area -->
+      
       <div class="flex-1 overflow-y-auto bg-gradient-to-b from-gray-50 to-white">
         <div id="messages" class="px-6 py-6 space-y-6">
           <%= render partial: "messages/message",
@@ -49,7 +49,7 @@
         </div>
       </div>
 
-      <!-- Composer -->
+      
       <div class="border-t border-gray-200 px-6 py-4 bg-white rounded-b-2xl shrink-0">
         <%= form_with model: [@conversation, @message],
                       class: "flex items-end gap-3",

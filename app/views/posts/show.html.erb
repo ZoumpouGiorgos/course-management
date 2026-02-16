@@ -1,9 +1,9 @@
 <div class="max-w-3xl mx-auto space-y-6">
 
-  <!-- Post Card -->
+  
   <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm space-y-5">
 
-    <!-- Header -->
+    
     <div class="flex items-center justify-between">
 
       <div class="flex items-center gap-3">
@@ -22,22 +22,22 @@
       <%= render "posts/course_pill", post: @post %>
     </div>
 
-    <!-- Divider -->
+    
     <div class="border-t border-gray-100"></div>
 
-    <!-- Title -->
+    
     <h1 class="text-2xl font-semibold text-gray-900">
       <%= @post.title %>
     </h1>
 
-    <!-- Body -->
+    
     <div class="text-gray-700 text-sm leading-relaxed">
       <%= simple_format(@post.body) %>
     </div>
 
   </div>
 
-  <!-- Actions -->
+  
   <div class="flex justify-between text-sm">
     <%= link_to "← Back to posts",
         posts_path,

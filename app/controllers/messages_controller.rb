@@ -9,7 +9,6 @@ class MessagesController < ApplicationController
       body: params.require(:message)[:body]
     )
 
-    # Notify everyone in the conversation except the sender
     recipients = conversation.participants.where.not(id: current_user.id)
 
     recipients.find_each do |recipient|

@@ -10,7 +10,6 @@ class Notification < ApplicationRecord
     read_at.present?
   end
 
-  # metadata is TEXT with JSON string default "{}" (SQLite)
   def metadata_hash
     JSON.parse(metadata.presence || "{}")
   rescue JSON::ParserError

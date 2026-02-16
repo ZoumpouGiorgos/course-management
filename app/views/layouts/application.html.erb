@@ -17,7 +17,6 @@
       <%= turbo_stream_from "notifications_#{current_user.id}" %>
     <% end %>
 
-    <!-- Header -->
     <header class="fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 z-10 shadow-sm">
       <div class="h-full px-6 flex items-center justify-between">
         <%= link_to posts_path, class: "flex items-center gap-2 hover:opacity-80 transition" do %>
@@ -32,7 +31,7 @@
           <%= link_to "Browse Posts", posts_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition" %>
 
           <% if user_signed_in? %>
-            <!-- Notifications -->
+          
             <div class="relative" data-controller="notifications">
               <button type="button"
                 class="relative p-2 rounded-lg hover:bg-gray-100 transition"
@@ -78,20 +77,17 @@
       </div>
     </header>
 
-    <!-- Main Content Area -->
     <div class="pt-16 h-full">
       <% if devise_controller? %>
-        <!-- Devise Pages (Login, Signup, etc) -->
+        
         <main class="h-full overflow-y-auto bg-gray-50">
           <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <%= yield %>
           </div>
         </main>
       <% else %>
-        <!-- Regular Pages with Sidebar -->
         <div class="flex h-full">
 
-          <!-- Left Sidebar - Contacts -->
           <aside class="w-80 shrink-0 border-r border-gray-200 bg-white flex flex-col shadow-sm">
             <% if user_signed_in? %>
               <% @sidebar_users = current_user.contacts.includes(:contact_user).map(&:contact_user).compact %>
@@ -99,7 +95,6 @@
               <% @sidebar_users = [] %>
             <% end %>
 
-            <!-- Sidebar Header -->
             <div class="p-5 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
               <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                 Contacts
@@ -109,7 +104,6 @@
               </p>
             </div>
 
-            <!-- Contacts List -->
             <div class="flex-1 overflow-y-auto">
               <% if user_signed_in? && @sidebar_users.any? %>
                 <div class="divide-y divide-gray-100">
@@ -152,16 +146,13 @@
             </div>
           </aside>
 
-          <!-- Main Content -->
           <main class="flex-1 overflow-y-auto bg-gray-50">
             <div class="max-w-5xl mx-auto p-8">
               <%= yield %>
             </div>
           </main>
 
-          <!-- Right Sidebar - Active Chats -->
           <aside class="w-80 shrink-0 border-l border-gray-200 bg-white flex flex-col shadow-sm">
-            <!-- Sidebar Header -->
             <div class="p-5 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
               <h2 class="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">
                 Active Chats
@@ -171,7 +162,6 @@
               </p>
             </div>
 
-            <!-- Chats List -->
             <div class="flex-1 overflow-y-auto">
               <% if user_signed_in? && @sidebar_conversations.present? %>
                 <div class="divide-y divide-gray-100">
@@ -243,7 +233,6 @@
       <% end %>
     </div>
 
-    <!-- Turbo Frame for Modal -->
     <turbo-frame id="chat_modal"></turbo-frame>
   </body>
 </html>

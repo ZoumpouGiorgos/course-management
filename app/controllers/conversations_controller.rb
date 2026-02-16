@@ -2,7 +2,6 @@ class ConversationsController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    # DM path: /conversations?user_id=123
     other_id = params[:user_id].presence&.to_i
 
     if other_id
@@ -14,7 +13,6 @@ class ConversationsController < ApplicationController
         ConversationParticipant.create!(conversation: @conversation, user_id: other_id)
       end
     else
-      # Group path: /conversations with user_ids[]
       user_ids = Array(params[:user_ids]).reject(&:blank?).map(&:to_i).uniq
       user_ids << current_user.id
       user_ids.uniq!

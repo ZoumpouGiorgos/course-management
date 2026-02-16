@@ -13,7 +13,7 @@
     </div>
   <% end %>
 
-  <!-- Title -->
+  
   <div>
     <%= form.label :title, class: "text-sm font-semibold text-gray-800" %>
     <%= form.text_field :title,
@@ -22,7 +22,7 @@
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" %>
   </div>
 
-  <!-- Body -->
+  
   <div>
     <%= form.label :body, class: "text-sm font-semibold text-gray-800" %>
     <%= form.textarea :body, rows: 5,
@@ -31,7 +31,7 @@
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 resize-none" %>
   </div>
 
-  <!-- Category -->
+  
   <div>
     <%= form.label :course_id, "Category", class: "text-sm font-semibold text-gray-800" %>
     <%= form.collection_select :course_id, @courses, :id, :title,
@@ -40,7 +40,7 @@
                 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" %>
   </div>
 
-  <!-- Actions -->
+  
     <%= form.submit "Publish",
         class: "px-6 py-2.5 rounded-lg bg-blue-600 text-white font-semibold
                 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500" %>
