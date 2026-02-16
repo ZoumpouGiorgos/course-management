@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :posts
   root to: "devise/sessions#new"
-  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+  devise_for :users, skip: [:passwords], controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
   resources :courses
   resources :users, only: [:show]
   resources :contacts, only: [:create, :destroy]

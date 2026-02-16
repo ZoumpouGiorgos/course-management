@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
-       :recoverable, :rememberable, :validatable,
-       :omniauthable, omniauth_providers: %i[google_oauth2]
+       :rememberable, :validatable, :omniauthable,
+       omniauth_providers: %i[google_oauth2]
          
   has_many :posts, dependent: :destroy
 
@@ -16,16 +16,24 @@ class User < ApplicationRecord
   has_many :notifications, foreign_key: :recipient_id, dependent: :destroy
 
   def self.from_google(auth)
-    user = User.find_by(email: auth.info.email)
+    email = auth.info.email
+    name  = auth.info.name
 
-    if user.nil?
-      user = User.create!(
-        email: auth.info.email,
-        password: Devise.friendly_token[0, 20],
-        username: (auth.info.name.presence || auth.info.email.split("@").first)
-      )
+    user = User.find_by(email: email)
+    return user if user
+
+    base = (name.presence || email.split("@").first).parameterize(separator: "_")
+    username = base
+    i = 1
+    while User.exists?(username: username)
+      i += 1
+      username = "#{base}_#{i}"
     end
 
-    user
+    User.create!(
+      email: email,
+      username: username,
+      password: Devise.friendly_token[0, 20]
+    )
   end
 end
