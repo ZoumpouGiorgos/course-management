@@ -1,16 +1,18 @@
 class PostsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_post, only: %i[ show edit update destroy ]
-  before_action :authorize_owner!, only: %i[ edit update destroy ]
+  before_action :set_post, only: %i[show edit update destroy]
+  before_action :authorize_owner!, only: %i[edit update destroy]
 
   def index
     @courses = Course.order(:title)
 
-    @posts = Post.includes(:course)
+    scope = Post.includes(:user, :course).order(created_at: :desc)
 
     if params[:course_id].present?
-      @posts = @posts.where(course_id: params[:course_id])
+      scope = scope.where(course_id: params[:course_id])
     end
+
+    @pagy, @posts = pagy(scope, items: 20)
   end
 
   def show
@@ -18,11 +20,11 @@ class PostsController < ApplicationController
 
   def new
     @post = Post.new
-    @courses = Course.all
+    @courses = Course.order(:title)
   end
 
   def edit
-    @courses = Course.all
+    @courses = Course.order(:title)
   end
 
   def create
@@ -33,6 +35,7 @@ class PostsController < ApplicationController
         format.html { redirect_to @post, notice: "Post was successfully created." }
         format.json { render :show, status: :created, location: @post }
       else
+        @courses = Course.order(:title)
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @post.errors, status: :unprocessable_entity }
       end
@@ -45,6 +48,7 @@ class PostsController < ApplicationController
         format.html { redirect_to @post, notice: "Post was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @post }
       else
+        @courses = Course.order(:title)
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @post.errors, status: :unprocessable_entity }
       end
@@ -75,5 +79,4 @@ class PostsController < ApplicationController
 
     redirect_to posts_path, alert: "You are not allowed to modify this post."
   end
-
 end

@@ -1,6 +1,5 @@
 <div class="max-w-5xl mx-auto px-4 py-8 space-y-6">
 
-  
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-3xl font-semibold text-gray-900">Posts</h1>
@@ -29,7 +28,6 @@
         onchange: "this.form.submit()" %>
     <% end %>
   </div>
-
   
   <div class="space-y-5">
     <%= render @posts %>
@@ -50,6 +48,7 @@
       </div>
     <% end %>
 
+    <%= pagy_nav(@pagy) %>
   </div>
 
 </div>

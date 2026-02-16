@@ -1,5 +1,6 @@
 module ApplicationHelper
     require "digest"
+    include Pagy::Frontend
 
     def color_from_string(str, saturation: nil, lightness: nil)
         hex = Digest::SHA256.hexdigest(str.to_s)
