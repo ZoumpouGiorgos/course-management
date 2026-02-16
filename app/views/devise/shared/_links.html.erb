@@ -18,8 +18,22 @@
   <p><%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name) %></p>
 <% end %>
 
-<%- if devise_mapping.omniauthable? %>
-  <%- resource_class.omniauth_providers.each do |provider| %>
-    <p><%= button_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider), data: { turbo: false } %></p>
+<% if devise_mapping.omniauthable? %>
+  <% resource_class.omniauth_providers.each do |provider| %>
+    <% path =
+      case provider.to_sym
+      when :google_oauth2 then user_google_oauth2_omniauth_authorize_path
+      else nil
+      end
+    %>
+
+    <% if path.present? %>
+      <p>
+        <%= button_to "Sign in with #{OmniAuth::Utils.camelize(provider)}",
+          path,
+          method: :post,
+          data: { turbo: false } %>
+      </p>
+    <% end %>
   <% end %>
 <% end %>
