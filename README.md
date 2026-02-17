@@ -15,7 +15,9 @@ rails db:migrate
 Running locally
 bundle install
 rails db:prepare
+rails db:seed
 rails server
+visit http://localhost:3000
 
 With Tailwind watcher:
 rails tailwindcss:watch
