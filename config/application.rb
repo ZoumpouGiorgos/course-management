@@ -1,6 +1,7 @@
 require_relative "boot"
 
 require "rails/all"
+require "pagy"
 
 Bundler.require(*Rails.groups)
 

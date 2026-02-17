@@ -48,7 +48,61 @@
       </div>
     <% end %>
 
-    <%= pagy_nav(@pagy) %>
+    <div class="flex justify-center my-8">
+      <% if @pagy && @pagy.pages.to_i > 1 %>
+        <% cur  = @pagy.page.to_i %>
+        <% last = @pagy.pages.to_i %>
+        <% window = 2 %>
+
+        <% start_page = [cur - window, 1].max %>
+        <% end_page   = [cur + window, last].min %>
+
+        <% if start_page > 1 %>
+          <% start_page = [end_page - (window * 2), 1].max %>
+        <% end %>
+        <% if end_page < last %>
+          <% end_page = [start_page + (window * 2), last].min %>
+        <% end %>
+
+        <nav class="inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white p-1 shadow-sm" aria-label="Pagination">
+          <%= link_to "‹",
+              url_for(request.query_parameters.merge(page: [cur - 1, 1].max)),
+              class: "h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition #{'pointer-events-none opacity-40' if cur <= 1}",
+              aria: { label: "Previous page" } %>
+
+          <% if start_page > 1 %>
+            <%= link_to "1",
+                url_for(request.query_parameters.merge(page: 1)),
+                class: "h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition" %>
+            <span class="h-9 px-2 inline-flex items-center justify-center text-sm text-gray-400">…</span>
+          <% end %>
+
+          <% (start_page..end_page).each do |p| %>
+            <% if p == cur %>
+              <span class="h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-full bg-gray-900 text-sm font-semibold text-white">
+                <%= p %>
+              </span>
+            <% else %>
+              <%= link_to p,
+                  url_for(request.query_parameters.merge(page: p)),
+                  class: "h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition" %>
+            <% end %>
+          <% end %>
+
+          <% if end_page < last %>
+            <span class="h-9 px-2 inline-flex items-center justify-center text-sm text-gray-400">…</span>
+            <%= link_to last,
+                url_for(request.query_parameters.merge(page: last)),
+                class: "h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition" %>
+          <% end %>
+
+          <%= link_to "›",
+              url_for(request.query_parameters.merge(page: [cur + 1, last].min)),
+              class: "h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition #{'pointer-events-none opacity-40' if cur >= last}",
+              aria: { label: "Next page" } %>
+        </nav>
+      <% end %>
+    </div>
   </div>
 
 </div>

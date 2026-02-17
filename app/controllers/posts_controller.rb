@@ -12,7 +12,7 @@ class PostsController < ApplicationController
       scope = scope.where(course_id: params[:course_id])
     end
 
-    @pagy, @posts = pagy(scope, items: 20)
+    @pagy, @posts = pagy(:offset, scope, limit: 20)
   end
 
   def show

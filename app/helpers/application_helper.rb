@@ -1,6 +1,5 @@
 module ApplicationHelper
     require "digest"
-    include Pagy::Frontend
 
     def color_from_string(str, saturation: nil, lightness: nil)
         hex = Digest::SHA256.hexdigest(str.to_s)
@@ -11,5 +10,12 @@ module ApplicationHelper
 
         "hsl(#{hue}, #{sat}%, #{lig}%)"
     end
-
+  
+    def pagy_nav_tailwind(pagy)
+        html = pagy_nav(pagy)
+        html.gsub('class="pagination"', 'class="flex justify-center space-x-2 my-8"')
+            .gsub('<a ', '<a class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" ')
+            .gsub('<span class="page current">', '<span class="px-4 py-2 bg-blue-700 text-white rounded">')
+            .gsub('<span class="page gap">', '<span class="px-4 py-2 text-gray-500">').html_safe
+    end
 end
