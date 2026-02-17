@@ -27,6 +27,7 @@
         <% end %>
 
         <nav class="flex items-center gap-6">
+          <%= link_to "Add Contact", new_contact_path, data: { turbo_frame: "chat_modal" }, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition" %>
           <%= link_to "New group chat", new_conversation_path, data: { turbo_frame: "chat_modal" }, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition" %>
           <%= link_to "Browse Posts", posts_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition" %>
 

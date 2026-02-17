@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   devise_for :users, skip: [:passwords], controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
   resources :courses
   resources :users, only: [:show]
-  resources :contacts, only: [:create, :destroy]
+  resources :contacts, only: [:new, :create, :destroy]
 
   resources :conversations, only: [:new, :show, :create] do
     resources :messages, only: [:create]
