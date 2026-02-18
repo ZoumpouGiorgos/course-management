@@ -17,23 +17,31 @@ class User < ApplicationRecord
 
   def self.from_google(auth)
     email = auth.info.email
-    name  = auth.info.name
+    name  = auth.info.name.to_s.strip
 
-    user = User.find_by(email: email)
-    return user if user
+    base =
+      if name.present?
+        name.parameterize(separator: "_")
+      else
+        email.split("@").first.parameterize(separator: "_")
+      end
 
-    base = (name.presence || email.split("@").first).parameterize(separator: "_")
+    if (!base.present?)
+      base = "user_"
+    end
+
     username = base
-    i = 1
+
+    i = 0
     while User.exists?(username: username)
       i += 1
       username = "#{base}_#{i}"
     end
 
-    User.create!(
-      email: email,
-      username: username,
-      password: Devise.friendly_token[0, 20]
-    )
+
+    where(email: email).first_or_create! do |u|
+      u.username = username
+      u.password = Devise.friendly_token.first(20)
+    end
   end
 end
