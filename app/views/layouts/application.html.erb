@@ -32,7 +32,7 @@
           <%= link_to "Browse Posts", posts_path, class: "text-sm font-medium text-gray-600 hover:text-gray-900 transition" %>
 
           <% if user_signed_in? %>
-          
+
             <div class="relative" data-controller="notifications">
               <button type="button"
                 class="relative p-2 rounded-lg hover:bg-gray-100 transition"
@@ -80,7 +80,7 @@
 
     <div class="pt-16 h-full">
       <% if devise_controller? %>
-        
+
         <main class="h-full overflow-y-auto bg-gray-50">
           <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <%= yield %>
@@ -169,7 +169,6 @@
                   <% @sidebar_conversations.each do |c| %>
                     <% others = c.participants.reject { |p| p.id == current_user.id } %>
                     <% title  = c.title.presence || others.map { |p| p.username.presence || "User ##{p.id}" }.join(", ") %>
-                    <% last   = c.messages.max_by(&:created_at) %>
 
                     <%= link_to conversation_path(c),
                           data: { turbo_frame: "chat_modal" },
@@ -187,20 +186,12 @@
                       </div>
 
                       <div class="min-w-0 flex-1">
-                        <div class="flex items-center justify-between gap-2 mb-1">
-                          <div class="text-sm font-semibold text-gray-900 truncate"><%= title %></div>
-                          <% if last %>
-                            <div class="text-[11px] text-gray-400 shrink-0"><%= last.created_at.strftime("%H:%M") %></div>
-                          <% end %>
+                        <div class="text-sm font-semibold text-gray-900 truncate">
+                          <%= title %>
                         </div>
 
                         <div class="text-xs text-gray-500 truncate">
-                          <% if last %>
-                            <span class="font-medium"><%= last.user_id == current_user.id ? "You" : last.user.username %>:</span>
-                            <%= last.body.to_s %>
-                          <% else %>
-                            <span class="italic">No messages yet</span>
-                          <% end %>
+                          Open chat
                         </div>
                       </div>
 
@@ -221,7 +212,7 @@
               <% else %>
                 <div class="flex flex-col items-center justify-center p-12 text-center">
                   <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03 8-9-8s9 3.582 9 8z" />
                   </svg>
                   <p class="text-sm font-medium text-gray-700 mb-3">Sign in to view chats</p>
                   <%= link_to "Log in", new_user_session_path, class: "inline-block px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition" %>
