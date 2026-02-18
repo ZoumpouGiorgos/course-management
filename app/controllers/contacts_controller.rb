@@ -2,11 +2,18 @@ class ContactsController < ApplicationController
   before_action :authenticate_user!
 
   def new
-    existing_ids = current_user.contacts.pluck(:contact_user_id)
-    @users = User.where.not(id: [current_user.id] + existing_ids).order(:username)
-    render layout: false
-  end
+    @q = params[:q].to_s.strip
 
+    @users = User.where.not(id: current_user.id)
+                .where.not(id: current_user.contacts.select(:id))
+
+    if @q.present?
+      term = "%#{@q.downcase}%"
+      @users = @users.where("LOWER(username) LIKE ? OR LOWER(email) LIKE ?", term, term)
+    end
+
+    @users = @users.order(:username)
+  end
 
   def create
     contact_user = User.find(params[:contact_user_id])

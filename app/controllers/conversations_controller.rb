@@ -30,9 +30,20 @@ class ConversationsController < ApplicationController
   end
 
   def new
-    @users = User.where.not(id: current_user.id).order(:username)
-    render "conversations/new", layout: false
+    @q = params[:q].to_s.strip
+
+    @users = User.where.not(id: current_user.id)
+
+    if @q.present?
+      term = "%#{@q.downcase}%"
+      @users = @users.where("LOWER(username) LIKE ? OR LOWER(email) LIKE ?", term, term)
+    end
+
+    @users = @users.order(:username)
+
+    @conversation = Conversation.new
   end
+
 
   def show
     @conversation = Conversation.find(params[:id])
